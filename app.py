@@ -95,6 +95,18 @@ class Bullet:
             screen.blit(self.image, (self.x, self.y))
 
 # Funciones
+def is_collision(enemy, bullet):
+    distance = math.sqrt((math.pow(enemy.x - bullet.x, 2)) + (math.pow(enemy.y - bullet.y, 2)))
+    return distance < 27
+
+def show_score(x, y, score):
+    score_text = font.render("Score : " + str(score), True, (0, 255, 0))
+    screen.blit(score_text, (x, y))
+
+def game_over_text():
+    over_text = over_font.render("GAME OVER", True, (0, 255, 0))
+    screen.blit(over_text, (200, 250))
+
 
  
 
@@ -109,14 +121,12 @@ textY = 10
 over_font = pygame.font.Font('freesansbold.ttf', 64)
 
 
-def show_score(x, y):
-    score = font.render("Score :" + str(score_value), True, (0, 255, 0))
-    screen.blit(score, (x, y))
+# Crear instancias
+player = Player()
+enemies = [Enemy() for _ in range(6)]
+bullet = Bullet()
+score_value = 0
 
-
-def game_over_text():
-    over_text = over_font.render("GAME OVER", True, (0, 255, 0))
-    screen.blit(over_text, (200, 250))
 
 
 def player(x, y):
@@ -132,13 +142,6 @@ def fire_bullet(x, y):
     bullet_state = "fire"
     screen.blit(bulletImg, (x + 16, y + 10))
 
-
-def isCollision(enemyX, enemyY, bulletX, bulletY):
-    distance = math.sqrt((math.pow(enemyX - bulletX, 2)) + (math.pow(enemyY - bulletY, 2)))
-    if distance < 27:
-        return True
-    else:
-        return False
 
 # Game Loop
 running = True
