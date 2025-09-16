@@ -3,9 +3,10 @@ import pygame
 import random
 from pygame import mixer
 
-clock = pygame.time.Clock()
 #Initialize the pygame
 pygame.init()
+clock = pygame.time.Clock()
+
 #create the screen
 screen = pygame.display.set_mode((800, 600))
 # Background
@@ -27,30 +28,75 @@ playerX = 370
 playerY = 480
 playerX_change = 0
 
-# Enemy
-enemyImg = []
-enemyX = []
-enemyY = []
-enemyX_change = []
-enemyY_change = []
-num_of_enemies = 6
+# Fuente texto
+font = pygame.font.Font('freesansbold.ttf', 32)
+over_font = pygame.font.Font('freesansbold.ttf', 64)
 
-for i in range(num_of_enemies):
-    enemyImg.append(pygame.image.load('enemy.png'))
-    enemyX.append(random.randint(0, 735))
-    enemyY.append(random.randint(50, 150))
-    enemyX_change.append(1)
-    enemyY_change.append(40)
+# Clases
+class Player:
+    def __init__(self):
+        self.image = pygame.image.load('player.png')
+        self.image = pygame.transform.scale(self.image, (70, 80))
+        self.x = 370
+        self.y = 480
+        self.x_change = 0
+        self.speed = 4
 
-# Bullet
-# Ready - You can't see the bullet on the screen
-# Fire - The bullet is currently moving
-bulletImg = pygame.image.load('bullet.png')
-bulletX = 0
-bulletY = 480
-bulletX_change = 0
-bulletY_change = 10
-bullet_state = "ready"
+    def move(self):
+        self.x += self.x_change
+        # Limitar movimiento dentro de la pantalla
+        if self.x <= 0:
+            self.x = 0
+        elif self.x >= 736:
+            self.x = 736
+
+    def draw(self, screen):
+        screen.blit(self.image, (self.x, self.y))
+
+class Enemy:
+    def __init__(self):
+        self.image = pygame.image.load('enemy.png')
+        self.x = random.randint(0, 735)
+        self.y = random.randint(50, 150)
+        self.x_change = 1
+        self.y_change = 40
+
+    def move(self):
+        self.x += self.x_change
+        if self.x <= 0:
+            self.x_change = 1
+            self.y += self.y_change
+        elif self.x >= 736:
+            self.x_change = -1
+            self.y += self.y_change
+
+    def draw(self, screen):
+        screen.blit(self.image, (self.x, self.y))
+
+class Bullet:
+    def __init__(self):
+        self.image = pygame.image.load('bullet.png')
+        self.x = 0
+        self.y = 480
+        self.y_change = 10
+        self.state = "ready"  # "ready" o "fire"
+    def fire(self, x, y):
+        self.state = "fire"
+        self.x = x + 16  # Ajuste para centrar la bala
+        self.y = y + 10
+    def move(self):
+        if self.state == "fire":
+            self.y -= self.y_change
+            if self.y <= 0:
+                self.state = "ready"
+                self.y = 480
+    def draw(self, screen):
+        if self.state == "fire":
+            screen.blit(self.image, (self.x, self.y))
+
+# Funciones
+
+ 
 
 # Score
 score_value = 0
