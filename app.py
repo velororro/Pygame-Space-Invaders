@@ -42,6 +42,9 @@ bulletImg2 = pygame.image.load('bullet2.png')
 font = pygame.font.Font('freesansbold.ttf', 32)
 over_font = pygame.font.Font('freesansbold.ttf', 64)
 
+# Variable global
+ENEMY_SPEED = 5
+
 # Clases
 class Player:
     def __init__(self, img):
@@ -67,16 +70,16 @@ class Enemy:
         self.image = enemy
         self.x = random.randint(0, 735)
         self.y = random.randint(50, 150)
-        self.x_change = 1
+        self.x_change = ENEMY_SPEED
         self.y_change = 40
 
     def move(self):
         self.x += self.x_change
         if self.x <= 0:
-            self.x_change = 1
+            self.x_change = ENEMY_SPEED
             self.y += self.y_change
         elif self.x >= 736:
-            self.x_change = -1
+            self.x_change = -ENEMY_SPEED
             self.y += self.y_change
 
     def draw(self, screen):
@@ -117,6 +120,9 @@ def game_over_text():
     over_text = over_font.render("GAME OVER", True, (0, 255, 0))
     screen.blit(over_text, (200, 250))
 
+def you_win_text():
+    win_text = over_font.render("YOU WIN!", True, (0, 255, 0))
+    screen.blit(win_text, (250, 250))
 
 # Crear instancias
 player1 = Player(playerImg1)
@@ -190,10 +196,10 @@ while running:
             bullet1.state = "ready"
             bullet1.y = 480
             score_value += 1
-            # Reposicionar enemigo
-            enemy.x = random.randint(0, 736)
-            enemy.y = random.randint(50, 150)
-
+            enemies.remove(enemy) # quita enemigo
+            if not enemies:  # Verifica si queda enemigos
+                you_win_text()
+                running = False
 
         if is_collision(enemy, bullet2):
             explosion_sound = mixer.Sound('impact.mp3')
@@ -201,9 +207,10 @@ while running:
             bullet2.state = "ready"
             bullet2.y = 480
             score_value += 1
-            # Reposicionar enemigo
-            enemy.x = random.randint(0, 736)
-            enemy.y = random.randint(50, 150)
+            enemies.remove(enemy)
+            if not enemies:
+                you_win_text()
+                running = False
 
         enemy.draw(screen)
 
